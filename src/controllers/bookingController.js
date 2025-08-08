@@ -11,7 +11,7 @@ exports.createBooking = async (req, res, next) => {
       return next(error);
     }
 
-    // Replaced inline check with helper function
+    //  helper function
     if (!isStartBeforeEnd(start_date, end_date)) {
       const error = new Error('start_date must be before end_date');
       error.statusCode = 400;
@@ -25,14 +25,14 @@ exports.createBooking = async (req, res, next) => {
       return next(error);
     }
 
-    // Replaced inline availability check with helper
+    //  inline availability check with helper
     if (!areDatesWithinAvailability(start_date, end_date, property.available_from, property.available_to)) {
       const error = new Error('Dates outside property availability range');
       error.statusCode = 400;
       return next(error);
     }
 
-    // Replaced inline overlap logic with helper
+    //  inline overlap logic with helper
     const overlap = await isOverlapping(property_id, start_date, end_date);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
@@ -83,7 +83,7 @@ exports.updateBooking = async (req, res, next) => {
       return next(error);
     }
 
-    // Use helper for start < end check
+    //  helper for start < end check
     if (!isStartBeforeEnd(start_date, end_date)) {
       const error = new Error('start_date must be before end_date');
       error.statusCode = 400;
@@ -99,14 +99,14 @@ exports.updateBooking = async (req, res, next) => {
 
     const property = await Property.findByPk(booking.property_id);
     
-    // Use helper for availability check
+    //  helper for availability check
     if (!areDatesWithinAvailability(start_date, end_date, property.available_from, property.available_to)) {
       const error = new Error('Dates outside property availability range');
       error.statusCode = 400;
       return next(error);
     }
 
-    // Use helper for overlap check, excluding current booking ID
+    //  helper for overlap check, excluding current booking ID
     const overlap = await isOverlapping(booking.property_id, start_date, end_date, id);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
