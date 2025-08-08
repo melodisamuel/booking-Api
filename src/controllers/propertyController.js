@@ -1,8 +1,7 @@
 const { Property } = require('../models');
 const { Op } = require('sequelize');
 
-// GET /properties (with optional pagination and date filter)
-exports.getAllProperties = async (req, res) => {
+exports.getAllProperties = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, start_date, end_date } = req.query;
     const offset = (page - 1) * limit;
@@ -28,18 +27,19 @@ exports.getAllProperties = async (req, res) => {
       data: properties.rows
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-// GET /properties/:id/availability
-exports.getPropertyAvailability = async (req, res) => {
+exports.getPropertyAvailability = async (req, res, next) => {
   try {
     const { id } = req.params;
     const property = await Property.findByPk(id);
 
     if (!property) {
-      return res.status(404).json({ message: 'Property not found' });
+      const error = new Error('Property not found');
+      error.statusCode = 404;
+      return next(error);
     }
 
     res.json({
@@ -48,6 +48,6 @@ exports.getPropertyAvailability = async (req, res) => {
       available_to: property.available_to
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-// const routes = require('./routes'); // we'll create this later
+const errorHandler = require('./middleware/errorHandler');
+// const routes = require('./routes');
 
 const app = express();
 
@@ -15,5 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.json({ message: 'Booking API is running 🚀' });
 });
+
+// error handling middleware 
+app.use(errorHandler);
 
 module.exports = app;
