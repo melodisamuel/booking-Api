@@ -1,28 +1,5 @@
 const { Booking, Property } = require('../../models');
-const { Op } = require('sequelize');
-
-const isOverlapping = async (property_id, start_date, end_date, excludeBookingId = null) => {
-  const whereClause = {
-    property_id,
-    [Op.or]: [
-      { start_date: { [Op.between]: [start_date, end_date] } },
-      { end_date: { [Op.between]: [start_date, end_date] } },
-      {
-        [Op.and]: [
-          { start_date: { [Op.lte]: start_date } },
-          { end_date: { [Op.gte]: end_date } }
-        ]
-      }
-    ]
-  };
-
-  if (excludeBookingId) {
-    whereClause.id = { [Op.ne]: excludeBookingId };
-  }
-
-  const overlappingBooking = await Booking.findOne({ where: whereClause });
-  return !!overlappingBooking;
-};
+const { isOverlapping, isStartBeforeEnd, areDatesWithinAvailability } = require('../utils/dateUtils');
 
 exports.createBooking = async (req, res, next) => {
   try {
@@ -34,7 +11,8 @@ exports.createBooking = async (req, res, next) => {
       return next(error);
     }
 
-    if (new Date(start_date) >= new Date(end_date)) {
+    // Replaced inline check with helper function
+    if (!isStartBeforeEnd(start_date, end_date)) {
       const error = new Error('start_date must be before end_date');
       error.statusCode = 400;
       return next(error);
@@ -47,15 +25,14 @@ exports.createBooking = async (req, res, next) => {
       return next(error);
     }
 
-    if (
-      new Date(start_date) < new Date(property.available_from) ||
-      new Date(end_date) > new Date(property.available_to)
-    ) {
+    // Replaced inline availability check with helper
+    if (!areDatesWithinAvailability(start_date, end_date, property.available_from, property.available_to)) {
       const error = new Error('Dates outside property availability range');
       error.statusCode = 400;
       return next(error);
     }
 
+    // Replaced inline overlap logic with helper
     const overlap = await isOverlapping(property_id, start_date, end_date);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
@@ -106,7 +83,8 @@ exports.updateBooking = async (req, res, next) => {
       return next(error);
     }
 
-    if (new Date(start_date) >= new Date(end_date)) {
+    // Use helper for start < end check
+    if (!isStartBeforeEnd(start_date, end_date)) {
       const error = new Error('start_date must be before end_date');
       error.statusCode = 400;
       return next(error);
@@ -120,15 +98,15 @@ exports.updateBooking = async (req, res, next) => {
     }
 
     const property = await Property.findByPk(booking.property_id);
-    if (
-      new Date(start_date) < new Date(property.available_from) ||
-      new Date(end_date) > new Date(property.available_to)
-    ) {
+    
+    // Use helper for availability check
+    if (!areDatesWithinAvailability(start_date, end_date, property.available_from, property.available_to)) {
       const error = new Error('Dates outside property availability range');
       error.statusCode = 400;
       return next(error);
     }
 
+    // Use helper for overlap check, excluding current booking ID
     const overlap = await isOverlapping(booking.property_id, start_date, end_date, id);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
