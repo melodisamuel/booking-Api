@@ -1,5 +1,5 @@
-const { Booking, Property } = require('../../models');
-const { isOverlapping, isStartBeforeEnd, areDatesWithinAvailability } = require('../utils/dateUtils');
+const { Booking, Property } = require('../models');
+const { isBookingOverlapping, isStartBeforeEnd, areDatesWithinAvailability } = require('../utils/dateUtils');
 
 exports.createBooking = async (req, res, next) => {
   try {
@@ -33,7 +33,7 @@ exports.createBooking = async (req, res, next) => {
     }
 
     //  inline overlap logic with helper
-    const overlap = await isOverlapping(property_id, start_date, end_date);
+    const overlap = await isBookingOverlapping(property_id, start_date, end_date);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
       error.statusCode = 400;
@@ -107,7 +107,7 @@ exports.updateBooking = async (req, res, next) => {
     }
 
     //  helper for overlap check, excluding current booking ID
-    const overlap = await isOverlapping(booking.property_id, start_date, end_date, id);
+    const overlap = await isBookingOverlapping(booking.property_id, start_date, end_date, id);
     if (overlap) {
       const error = new Error('Booking dates overlap with existing booking');
       error.statusCode = 400;

@@ -1,6 +1,36 @@
 const { Property } = require('../models');
 const { Op } = require('sequelize');
 
+exports.createProperty = async (req, res, next) => {
+  try {
+    const { title, description, price_per_night, available_from, available_to } = req.body;
+
+    if (!title || !price_per_night || !available_from || !available_to) {
+      const error = new Error('Missing required fields');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    if (new Date(available_from) > new Date(available_to)) {
+      const error = new Error('available_from must be before available_to');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const property = await Property.create({
+      title,
+      description,
+      price_per_night,
+      available_from,
+      available_to,
+    });
+
+    res.status(201).json(property);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getAllProperties = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, start_date, end_date } = req.query;

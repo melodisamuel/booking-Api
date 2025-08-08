@@ -1,5 +1,5 @@
 // src/validations/dateValidation.js
-const { Booking } = require('../../models');
+const { Booking } = require('../models');
 const { Op } = require('sequelize');
 
 function isStartBeforeEnd(start_date, end_date) {

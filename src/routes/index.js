@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const propertyRoutes = require('./property.routes');
-const bookingRoutes = require('./booking.routes');
+const propertyRoutes = require('./propertyRoutes');
+const bookingRoutes = require('./bookingRoutes');
 
 router.use('/properties', propertyRoutes);
 router.use('/bookings', bookingRoutes);
