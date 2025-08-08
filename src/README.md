@@ -38,3 +38,15 @@ npx sequelize db:migrate
 
 Start the server
 npm start
+
+
+Assumptions & Notes
+Dates must be within property availability range.
+
+Bookings cannot overlap existing bookings.
+
+start_date must be before end_date.
+
+Pagination defaults to 10 items per page.
+
+Error responses follow consistent JSON structure with meaningful messages.
