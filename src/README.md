@@ -1,4 +1,4 @@
-# Booking API
+# 📖 Booking API
 
 A simple Booking API for property rentals (like Airbnb).
 
@@ -18,7 +18,7 @@ A simple Booking API for property rentals (like Airbnb).
 
 1. **Clone the repo**  
    ```bash
-   git clone <repo_url>
+   git clone <https://github.com/melodisamuel/booking-Api.git>
    cd booking-api
 
 
@@ -50,3 +50,24 @@ start_date must be before end_date.
 Pagination defaults to 10 items per page.
 
 Error responses follow consistent JSON structure with meaningful messages.
+
+# Testing Note
+Property tests
+
+First, create a property (POST /properties).
+
+Fetch it with GET /properties and GET /properties/:id/availability.
+
+Booking tests
+
+Use the property’s id from the first step.
+
+Test overlapping bookings to verify error handling.
+
+Try dates outside the property’s availability to see validation in action.
+
+Pagination test
+
+Create multiple properties.
+
+Use GET /properties?page=2&limit=5 to check pagination logic.
