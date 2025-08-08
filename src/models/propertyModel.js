@@ -1,6 +1,6 @@
 // const { DataTypes } = require('sequelize');
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Adjust path to your sequelize instance
+const sequelize = require('../config/database'); 
 
 const Property = sequelize.define('Property', {
   title: {
@@ -27,7 +27,7 @@ const Property = sequelize.define('Property', {
   timestamps: false,
 });
 
-// Add associations if needed (e.g., hasMany Bookings)
+//  Associations 
 Property.associate = function(models) {
   Property.hasMany(models.Booking, { foreignKey: 'property_id' });
 };
